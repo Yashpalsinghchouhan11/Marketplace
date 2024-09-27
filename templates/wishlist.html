@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Wishlist{% endblock title %}
+{% block main-content %}
+<style>
+    body{
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+      }
+    .wishlist-main-container {
+      /* max-width: 1200px; */
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .wishlist-container {
+      display: flex;
+      margin-top: 50px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 700px;
+    }
+    .wishlist-img {
+      /* margin-right: 50px; */
+      margin: 20px;
+      flex: 0 0 250px; /* Fixed width for the image container */
+    }
+    .wishlist-content {
+      flex: 1; /* Take remaining space */
+      padding: 20px;
+      background-color: #fff;
+    }
+    .wishlist-content h2 {
+      margin-top: 0;
+    }
+    .wishlist-content p {
+      color: #555;
+    }
+    .quantity-control {
+      display: flex;
+      align-items: center;
+    }
+    .quantity-control input[type="number"] {
+      width: 60px;
+      text-align: center;
+      margin: 0 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .price {
+      margin-top: 10px;
+      color: #1f2020;
+      font-weight: bold;
+    }
+    .order-container{
+      height: auto;
+      width: 300px;
+      padding:15px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      position: fixed; /* Fix the container */
+      right: 10%; /* Adjust the position */
+      top: 50%; /* Center vertically */
+      transform: translateY(-50%);
+      justify-content: space-between;
+    }
+    .Place-order{
+      background-color:#118bba;
+      color: #fff;
+      border-color: #868383;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .Place-order:hover{
+      color: #3c3a3a;
+    }
+  
+    .price-detail{
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  
+  </style>
+  <div class="wishlist-main-container">
+    <h2>Shopping Wishlist</h2>
+    {% for wish in Wishlist %}
+    <div class="wishlist-container">
+      <div class="wishlist-img">
+        <img
+          src="{{wish.Product.Product_image.url}}"
+          alt="Product Image"
+          style="height: 250px; width: 250px"
+        />
+      </div>
+      <div class="wishlist-content">
+        <h5>{{wish.Product.Product_name}}</h5>
+        <p>{{wish.Product.Product_description}}</p>
+        <div class="price">₹ {{wish.Product.Product_price}}</div>
+        <form action="{% url 'remove_from_wishlist' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="wishlist_id" value="{{wish.id}}" />
+          <button type="submit" class="btn btn-danger mt-2">Remove item</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+{% endblock main-content %}

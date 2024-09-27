@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter OTP</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .otp-container {
+            height: 250px;
+            width: 350px;
+            background-color: rgb(244, 241, 241);
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: rgb(24, 22, 22);
+            box-shadow: 2px 2px 2px 0px rgb(0 0 0 / 20%);
+            margin-top: 150px;
+        }
+
+        .otp-container h2 {
+            margin: 0 0 20px 0;
+        }
+
+        .otp-input {
+            width: 150px;
+            height: 50px;
+            font-size: 24px;
+            border: 1px solid #a9a5a5;
+            border-radius: 4px;
+            text-align: center;
+            box-sizing: border-box;
+            margin: 0 5px;
+            outline: none;
+        }
+
+        .otp-input:focus {
+            border-color: #007bff;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            margin-left: 37px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .button-c {
+            margin-top: 10px;
+        }
+
+        .resend-btn {
+            margin-top: 10px;
+            color: #030303;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="otp-container">
+        <h2>Enter OTP</h2>
+        <form id="otp-form" method="post">
+            {% csrf_token %}
+            <input type="text" id="otp-input" class="otp-input" maxlength="4"
+                title="Please enter a 4-digit OTP with digits only" required
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <div class="button-c">
+                <button type="submit" class="submit-btn" onclick="CheckOtp(event)">Submit</button>
+            </div>
+        </form>
+        <p id="timer"></p>
+        <p class="resend-btn" id="resend">Resend OTP</p>
+    </div>
+    <script>
+        // Function to retrieve CSRF token from browser cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Function to handle form submission
+        async function CheckOtp(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Retrieve CSRF token
+            const csrfToken = getCookie('csrftoken');
+            console.log(csrfToken); // Log CSRF token to console for debugging
+
+            // Retrieve OTP value from input field
+            const otpValue = document.getElementById('otp-input').value;
+            console.log(otpValue); // Log OTP value to console for debugging
+
+            try {
+                // Send POST request to server with OTP data and CSRF token
+                const response = await fetch('/verify_otp/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken // Pass CSRF token in request headers
+                    },
+                    body: JSON.stringify({ 'otp': otpValue }), // Convert OTP data to JSON format
+                });
+
+                // Handle response as needed
+            //     if (response.ok) {
+            //         // Example: Redirect to a new page upon successful submission
+            //         window.location.href = '{}';
+            //     } else {
+            //         // Example: Display an error message if request fails
+            //         console.error('Error:', response.statusText);
+            //     }
+            } catch (error) {
+                // Handle errors in fetching or processing the request
+                console.error('Error:', error);
+            }
+        }
+    </script>
+
+</body>
+
+</html>

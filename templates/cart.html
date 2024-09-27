@@ -1,0 +1,254 @@
+{% extends "base.html" %} {% load static %} {% block title %} Cart {% endblock %} 
+{% block main-content %}
+<style>
+  body{
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+    }
+  .cart-main-container {
+    min-height:100vh;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .cart-container {
+    display: flex;
+    margin-top: 50px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 700px;
+  }
+  .cart-img {
+    /* margin-right: 50px; */
+    margin: 20px;
+    flex: 0 0 250px; /* Fixed width for the image container */
+  }
+  .cart-content {
+    flex: 1; /* Take remaining space */
+    padding: 20px;
+    background-color: #fff;
+  }
+  .cart-content h2 {
+    margin-top: 0;
+  }
+  .cart-content p {
+    color: #555;
+  }
+  .quantity-control {
+    display: flex;
+    align-items: center;
+  }
+  .quantity-control input[type="number"] {
+    width: 60px;
+    text-align: center;
+    margin: 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .price {
+    margin-top: 10px;
+    color: #1f2020;
+    font-weight: bold;
+  }
+  .order-container{
+    height: auto;
+    width: 300px;
+    padding:15px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Fix the container */
+    right: 10%; /* Adjust the position */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%);
+    justify-content: space-between;
+  }
+  .Place-order{
+    background-color:#118bba;
+    color: #fff;
+    border-color: #868383;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  .Place-order:hover{
+    color: #3c3a3a;
+  }
+
+  .price-detail{
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+</style>
+<div class="cart-main-container">
+  <h2>Shopping Cart</h2>
+  {% for cart in carts %}
+  <div class="cart-container">
+    <div class="cart-img">
+      <img
+        src="{{cart.Product.Product_image.url}}"
+        alt="Product Image"
+        style="height: 250px; width: 250px"
+      />
+    </div>
+    <div class="cart-content">
+      <h5>{{cart.Product.Product_name}}</h5>
+      <p>{{cart.Product.Product_description}}</p>
+      <div class="quantity-control">
+        <a href="{% url 'cart_quantity_minus' %}" id="decrease-quantity" class="btn btn-link px-2 decrease-quantity " disabled='disabled' pid="{{cart.Product.id}}" onclick="decreaseQuantity({{cart.id}})">
+          <i class="fas fa-minus"></i>
+        </a>
+        <input
+          id="quantityInput{{cart.id}}"
+          min="1"
+          max="10"
+          name="quantity"
+          value="{{cart.quantity}}"
+          type="number"
+          class="form-control form-control-sm"
+          readonly="true"
+        >
+        <a href="{% url 'cart_quantity_plus' %}" class="btn btn-link px-2 increase-quantity" a="{{cart.id}}" pid="{{cart.Product.id}}" onclick="increaseQuantity({{cart.id}})">
+          <i class="fas fa-plus"></i>
+        </a>
+      </div>
+      <div class="price">₹ {{cart.Product.Product_price}}</div>
+      <form action="{% url 'remove_cart_item' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="cart_id" value="{{cart.id}}" />
+        <button type="submit" class="btn btn-danger mt-2">Remove item</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="order-container" >
+    <div class="price-detail">Price Details</div>
+    {% if total_cart_item > 1 %}
+        <p >price ( {{total_cart_item}} Items ) :- <span id="item_Price">₹ {{Total_amount}}</span>
+        </p>
+    {% else %}
+        <p >price ( {{total_cart_item}} Item ) :- <span id="item_Price">₹ {{Total_amount}}</span></p>
+    {% endif %}
+    <p id="total_item_price">Total Amount :- <span id="total_items_amount">₹ {{Total_amount}}</span></p>
+    <div>
+        <button type="submit" class="Place-order" >Place-order</button>
+    </div>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  function decreaseQuantity(cartId) {
+    var quantityInput = document.getElementById("quantityInput" + cartId);
+    if (quantityInput.value > 1) {
+      quantityInput.value--;
+    }else {
+      console.error("Input field not found for cartId: " + cartId);
+    }
+    
+  }
+
+  function increaseQuantity(cartId) {
+    var quantityInput = document.getElementById("quantityInput" + cartId);
+    if (quantityInput.value < 10){
+        quantityInput.value++;
+      } else {
+          console.error("Input field not found for cartId: " + cartId);
+        }
+  }
+
+
+ // JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.increase-quantity').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default link behavior
+
+            const productId = this.getAttribute('pid');
+
+            fetch("{% url 'cart_quantity_plus' %}?prod_id=" + productId, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add any additional headers if required
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('item_Price').innerText = '₹' + data.Total_amount;
+                document.getElementById('total_items_amount').innerText = '₹' + data.Total_amount;
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        });
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.decrease-quantity').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default link behavior
+
+            const productId = this.getAttribute('pid');
+
+            fetch("{% url 'cart_quantity_minus' %}?prod_id=" + productId, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add any additional headers if required
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('item_Price').innerText = '₹' + data.Total_amount;
+                document.getElementById('total_items_amount').innerText = '₹' + data.Total_amount;
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        });
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if there's a success message and trigger SweetAlert
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '{{ message }}',
+                timer: 10000,
+                showConfirmButton: true,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+            {% elif message.tags == 'info' %} 
+                Swal.fire({
+                icon: 'info',
+                title: 'info!',
+                text: '{{ message }}',
+                timer: 10000,
+                showConfirmButton: true,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+              });
+        {% endif %}
+    {% endfor %}
+});
+  
+</script>
+{% endblock main-content %}

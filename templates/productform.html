@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+product
+{% endblock title %}
+{% block main-content %}
+<style>
+    /* product_form.css */
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+}
+
+h2 {
+    text-align: center;
+    margin: 20px 0;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.form-control-file {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.Product-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.Product-btn:hover {
+    background-color: #0056b3;
+}
+
+/* product_form.css */
+
+/* Style for select element */
+.select-category {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  /* Style for select options */
+  .category-options {
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  /* Style for select dropdown arrow */
+  .select-category::-ms-expand {
+    display: none;
+  }
+  
+  .select-category::after {
+    content: '\25BC';
+    /* position: absolute; */
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  
+
+</style>
+<h2 class="">Create Product</h2>
+<div class="container">
+  <form method="post" id="product-form" class="product-form">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="id_Product_name">Product Name:</label>
+      <input
+        type="text"
+        id="id_Product_name"
+        name="Product_name"
+        class="form-control"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="id_Product_category">Product Category:</label>
+      <!-- {% comment %} <input type="text" id="id_Product_category" name="Product_category" class="form-control"> {% endcomment %} -->
+      <select
+        name="Product_category"
+        id="select-Category"
+        class="select-category"
+        required
+      >
+        <option value="Select-Category" class="category-options">
+          Select Category
+        </option>
+        <option value="Clothes" class="category-options">Clothes</option>
+        <option value="Shoes" class="category-options">Shoes</option>
+        <option value="Electronics" class="category-options">
+          Electronics
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="id_Product_image">Product Image:</label>
+      <input
+        type="file"
+        id="id_Product_image"
+        name="Product_image"
+        class="form-control-file"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="id_Product_price">Product Price:</label>
+      <input
+        type="text"
+        id="id_Product_price"
+        name="Product_price"
+        class="form-control"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="id_Product_quantity">Product Quantity:</label>
+      <input
+        type="number"
+        id="id_Product_quantity"
+        name="Product_quantity"
+        class="form-control"
+        min="1"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="id_Product_description">Product Description:</label>
+      <textarea
+        id="id_Product_description"
+        name="Product_description"
+        class="form-control"
+        rows="3"
+        required
+      ></textarea>
+    </div>
+    <button type="submit" class="Product-btn">Register Product</button>
+  </form>
+  <script src="{% static 'js/myscript.js' %}"></script>
+</div>
+
+{% endblock main-content %}

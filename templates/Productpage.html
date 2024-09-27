@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %} 
+{% block title %} product-info {% endblock title %} 
+
+{% block main-content  %}
+<link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+{% for Product_info in product_info %}
+<div class="my-5">
+  <div class="row">
+    <div class="col-md-6">
+      <img src="{{Product_info.Product_image.url}}" alt="Product Image" id="main-image" height="400" width="500" class="img-fluid rounded m-3" style="object-fit: cover;">
+      {% comment %} <div class="row mt-3">
+        <div class="col-3">
+          <img src="{{Product_info.Product_image.url}}" alt="Product Thumbnail" height="80" width="80" class="img-thumbnail border border-primary" style="aspect-ratio: 80 / 80; object-fit: cover;" onclick="switchImage(this)">
+        </div>
+        <div class="col-3">
+          <img src="{{Product_info.Product_image.url}}" alt="Product Thumbnail" height="80" width="80" class="img-thumbnail border border-primary" style="aspect-ratio: 80 / 80; object-fit: cover;" onclick="switchImage(this)">
+        </div>
+        <div class="col-3">
+          <img src="{{Product_info.Product_image.url}}" alt="Product Thumbnail" height="80" width="80" class="img-thumbnail border border-primary" style="aspect-ratio: 80 / 80; object-fit: cover;" onclick="switchImage(this)">
+        </div>
+        <div class="col-3">
+          <img src="{{Product_info.Product_image.url}}" alt="Product Thumbnail" height="80" width="80" class="img-thumbnail border border-primary" style="aspect-ratio: 80 / 80; object-fit: cover;" onclick="switchImage(this)">
+        </div>
+      </div> {% endcomment %}
+    </div>
+    <div class="col-md-6">
+      <h1 class="text-2xl font-bold mb-2">{{Product_info.Product_name}}</h1>
+      <p class="text-sm text-gray-500 mb-2">{{Product_info.Product_description}}</p>
+      <div class="d-flex align-items-baseline mb-2">
+        <span class="text-4xl font-bold text-success">₹{{Product_info.Product_price}}</span>
+      </div>
+      <form action="{% url 'Add_to_cart' %}" method="post" class="mb-3">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" value="{{ Product_info.id }}">
+        <button type="submit" class="btn btn-primary me-3">ADD TO CART</button>
+      </form>
+      <button class="btn btn-success">BUY NOW</button>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<script>
+  function switchImage(element) {
+    const mainImage = document.getElementById('main-image');
+    mainImage.src = element.src;
+  }
+</script>
+{% endblock main-content %}
